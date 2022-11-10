@@ -124,6 +124,10 @@ abstract class SignatureVerifyAction(
   val headerKeySignature: String
   val signingSecretConfigKey: String
 
+  private val validate = signatureVerifierService.validate(
+    config.get[String](signingSecretConfigKey)
+  )(_, _, _)
+
   override protected def executionContext: ExecutionContext = ec
 
   override protected def refine[A](
@@ -136,11 +140,8 @@ abstract class SignatureVerifyAction(
     (timestamp, signature) match {
       case (Some(timestamp), Some(signature)) =>
         Future.successful {
-          val validate = (body: String) =>
-            signatureVerifierService.validate(
-              config.get[String](signingSecretConfigKey)
-            )(timestamp, body, signature)
-          Right(new SignedRequest[A](validate, request))
+          val callback = (body: String) => validate(timestamp, body, signature)
+          Right(new SignedRequest[A](callback, request))
         }
       case _ =>
         Future {
