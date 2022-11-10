@@ -2,6 +2,8 @@
 
 ## Example usage
 
+To validate an HMAC signature in a play controller mixin the `HMACSignatureHelpers` trait.
+
 The example controller below will echo back the message only if the request is correctly signed.  On the other hand, if the signature is invalid it will return a 401 status.
 
 ~~~scala
