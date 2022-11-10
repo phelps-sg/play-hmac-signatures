@@ -19,6 +19,8 @@ trait SignatureVerifierService {
 @Singleton
 class HmacSHA256SignatureVerifier extends SignatureVerifierService {
 
+  val algorithm = "HmacSHA256"
+
   def validate(
       signingSecret: => String
   )(
@@ -30,10 +32,10 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
     import javax.crypto.spec.SecretKeySpec
     import javax.xml.bind.DatatypeConverter
 
-    val secret = new SecretKeySpec(signingSecret.getBytes, "HmacSHA256")
+    val secret = new SecretKeySpec(signingSecret.getBytes, algorithm)
     val payload = s"v0:$timestamp:$body"
 
-    val mac = Mac.getInstance("HmacSHA256")
+    val mac = Mac.getInstance(algorithm)
     mac.init(secret)
 
     val signatureBytes = mac.doFinal(payload.getBytes)
