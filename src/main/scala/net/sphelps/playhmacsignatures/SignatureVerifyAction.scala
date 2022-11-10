@@ -124,9 +124,10 @@ abstract class SignatureVerifyAction(
   val headerKeySignature: String
   val signingSecretConfigKey: String
 
-  private val validate = signatureVerifierService.validate(
-    config.get[String](signingSecretConfigKey)
-  )(_, _, _)
+  protected val validate: (String, String, String) => Try[String] =
+    signatureVerifierService.validate(
+      config.get[String](signingSecretConfigKey)
+    )(_, _, _)
 
   override protected def executionContext: ExecutionContext = ec
 
