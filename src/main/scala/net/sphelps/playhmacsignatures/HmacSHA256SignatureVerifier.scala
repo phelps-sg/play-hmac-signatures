@@ -1,7 +1,6 @@
 package net.sphelps.playhmacsignatures
 
-import com.google.inject.{ImplementedBy, Inject, Singleton}
-import play.api.Configuration
+import com.google.inject.{ImplementedBy, Singleton}
 
 import scala.util.{Failure, Success, Try}
 
@@ -18,9 +17,7 @@ trait SignatureVerifierService {
 }
 
 @Singleton
-class HmacSHA256SignatureVerifier @Inject() (
-    protected val config: Configuration
-) extends SignatureVerifierService {
+class HmacSHA256SignatureVerifier extends SignatureVerifierService {
 
   def validate(
       signingSecret: => String
