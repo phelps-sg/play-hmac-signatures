@@ -19,3 +19,5 @@ libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % "5.1.0"
 )
 
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.14"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.14" % "test"
