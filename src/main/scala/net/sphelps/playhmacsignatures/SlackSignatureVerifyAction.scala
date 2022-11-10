@@ -6,7 +6,7 @@ import play.api.mvc.BodyParsers
 
 import scala.concurrent.ExecutionContext
 
-class SlackSignatureVerifyAction @Inject()(
+class SlackSignatureVerifyAction @Inject() (
     parser: BodyParsers.Default,
     config: Configuration,
     signatureVerifierService: SignatureVerifierService
