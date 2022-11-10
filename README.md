@@ -46,4 +46,4 @@ and the signing secret is taken from the following configuration key:
 slack.signingSecret
 ~~~~
 
-To use different headers and/or configuration key subclass `SignatureVerifyAction` and override abstract members.
+To use different headers and/or configuration key, subclass `SignatureVerifyAction` and override abstract members.
