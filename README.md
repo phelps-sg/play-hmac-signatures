@@ -32,3 +32,18 @@ class TestController(
   }
 }
 ~~~
+
+[`SlackSignatureVerifyAction`](https://github.com/phelps-sg/play-hmac-signatures/blob/main/src/main/scala/net/sphelps/playhmacsignatures/SlackSignatureVerifyAction.scala) looks for the following headers:
+
+~~~
+X-Slack-Request-Timestamp
+X-Slack-Signature
+~~~
+
+and the signing secret is taken from the following configuration key:
+
+~~~
+slack.signingSecret
+~~~~
+
+To use different headers and/or configuration key subclass `SignatureVerifyAction` and override abstract members.
