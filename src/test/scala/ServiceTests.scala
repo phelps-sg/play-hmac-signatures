@@ -25,7 +25,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
         testBody,
         testSignature
       )
-      result should matchPattern { case Failure(InvalidSignatureException(_)) =>
+      result should matchPattern { case Failure(InvalidSignatureException) =>
       }
     }
 
@@ -43,7 +43,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
         f"v0=${DatatypeConverter.printHexBinary(signatureBytes).toLowerCase}"
       val result =
         verifier.validate(testSecret)(timestampStr, testBody, signature)
-      result should matchPattern { case Success(testBody) =>
+      result should matchPattern { case Success(`testBody`) =>
       }
     }
   }
