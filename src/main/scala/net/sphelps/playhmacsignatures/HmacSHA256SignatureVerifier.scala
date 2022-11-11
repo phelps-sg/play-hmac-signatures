@@ -4,8 +4,7 @@ import com.google.inject.{ImplementedBy, Singleton}
 
 import scala.util.{Failure, Success, Try}
 
-case object InvalidSignatureException
-    extends Exception("Invalid signature")
+case object InvalidSignatureException extends Exception("Invalid signature")
 
 @ImplementedBy(classOf[HmacSHA256SignatureVerifier])
 trait SignatureVerifierService {

@@ -37,11 +37,11 @@ class ControllerTests extends AnyWordSpecLike with should.Matchers {
       slackSignatureVerifyAction
     )
     val body = ByteString(
-        Json.parse(""" { "message" : "Hello world!" } """).toString()
-      )
+      Json.parse(""" { "message" : "Hello world!" } """).toString()
+    )
 
     "return a 401 error when not supplying signatures" in {
-     val fakeRequest = FakeRequest(POST, "/").withBody(body)
+      val fakeRequest = FakeRequest(POST, "/").withBody(body)
       val result = testController.test().apply(fakeRequest)
       status(result) mustEqual UNAUTHORIZED
     }
