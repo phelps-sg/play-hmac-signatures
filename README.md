@@ -1,5 +1,9 @@
 # play-hmac-signatures
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/phelps-sg/play-hmac-signatures/CI)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/phelps-sg/play-hmac-signatures)
+![GitHub](https://img.shields.io/github/license/phelps-sg/play-hmac-signatures?color=blue)
+
 ## Example usage
 
 To validate an HMAC signature in a play controller mixin the `HMACSignatureHelpers` trait.
