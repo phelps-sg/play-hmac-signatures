@@ -3,6 +3,8 @@ organization := "sphelps.net"
 
 version := "0.1-SNAPSHOT"
 
+enablePlugins(Dependencies)
+
 inThisBuild(
   List(
     scalaVersion := "2.13.10",
@@ -14,11 +16,36 @@ inThisBuild(
   )
 )
 
-libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play" % "2.8.18",
-  "com.google.inject" % "guice" % "5.1.0"
+// Fixing Scala-Xml mess (Temp).
+ThisBuild / libraryDependencySchemes ++= Seq(
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
 
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.14"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.14" % "test"
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test
+addCommandAlias(
+  "validateCode",
+  List(
+    "scalafix",
+    "scalafmtSbtCheck",
+    "scalafmtCheckAll",
+    "test:scalafix",
+    "test:scalafmtCheckAll"
+  ).mkString(";")
+)
+
+addCommandAlias(
+  "formatCode",
+  List(
+    "scalafmt",
+    "scalafmtSbt",
+    "Test/scalafmt"
+  ).mkString(";")
+)
+
+addCommandAlias(
+  "testWithCoverage",
+  List(
+    "coverage",
+    "test",
+    "coverageReport"
+  ).mkString(";")
+)
