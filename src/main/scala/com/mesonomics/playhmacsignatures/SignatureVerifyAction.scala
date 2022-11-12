@@ -1,7 +1,7 @@
-package net.sphelps.playhmacsignatures
+package com.mesonomics.playhmacsignatures
 
 import akka.util.ByteString
-import net.sphelps.playhmacsignatures.SignatureVerifyAction.SignedRequestByteStringValidator
+import SignatureVerifyAction.SignedRequestByteStringValidator
 import play.api.mvc.Results.Unauthorized
 import play.api.mvc._
 import play.api.{Configuration, Logging}

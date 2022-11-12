@@ -1,10 +1,7 @@
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.util.ByteString
-import net.sphelps.playhmacsignatures.{
-  HmacSHA256SignatureVerifier,
-  SlackSignatureVerifyAction
-}
+import com.mesonomics.playhmacsignatures.{HmacSHA256SignatureVerifier, SlackSignatureVerifyAction}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpecLike

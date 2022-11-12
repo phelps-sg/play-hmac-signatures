@@ -1,4 +1,4 @@
-package net.sphelps.playhmacsignatures
+package com.mesonomics.playhmacsignatures
 
 import com.google.inject.Inject
 import play.api.Configuration

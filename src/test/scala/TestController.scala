@@ -1,8 +1,5 @@
 import akka.util.ByteString
-import net.sphelps.playhmacsignatures.{
-  HMACSignatureHelpers,
-  SlackSignatureVerifyAction
-}
+import com.mesonomics.playhmacsignatures.{HMACSignatureHelpers, SlackSignatureVerifyAction}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, BaseController, ControllerComponents}
 
