@@ -1,4 +1,7 @@
-import com.mesonomics.playhmacsignatures.{HmacSHA256SignatureVerifier, InvalidSignatureException}
+import com.mesonomics.playhmacsignatures.{
+  HmacSHA256SignatureVerifier,
+  InvalidSignatureException
+}
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpecLike
 
