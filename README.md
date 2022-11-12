@@ -38,7 +38,7 @@ class TestController(
 }
 ~~~
 
-[`SlackSignatureVerifyAction`](https://github.com/phelps-sg/play-hmac-signatures/blob/main/src/main/scala/net/sphelps/playhmacsignatures/SlackSignatureVerifyAction.scala) looks for the following headers:
+[`SlackSignatureVerifyAction`](https://github.com/phelps-sg/play-hmac-signatures/blob/main/src/main/scala/com/mesonomics/playhmacsignatures/SlackSignatureVerifyAction.scala) looks for the following headers:
 
 ~~~
 X-Slack-Request-Timestamp
