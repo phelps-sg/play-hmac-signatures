@@ -1,13 +1,18 @@
 name := """play-hmac-signatures"""
+
 version := "0.2.0"
+
 organization := "com.mesonomics"
+
 homepage := Some(url("https://github.com/phelps-sg/play-hmac-signatures"))
+
 scmInfo := Some(
   ScmInfo(
     url("https://github.com/phelps-sg/play-hmac-signatures"),
     "git@github.com:phelps-sg/play-hmac-signatures.git"
   )
 )
+
 developers := List(
   Developer(
     "phelps-sg",
@@ -16,7 +21,9 @@ developers := List(
     url("https://github.com/usernamehttps://github.com/phelps-sg")
   )
 )
+
 licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
+
 publishMavenStyle := true
 
 publishTo := Some(
