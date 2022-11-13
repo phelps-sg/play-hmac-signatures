@@ -1,5 +1,5 @@
 name := """play-hmac-signatures"""
-version := "0.1.0-SNAPSHOT"
+version := "0.2.0"
 organization := "com.mesonomics"
 homepage := Some(url("https://github.com/phelps-sg/play-hmac-signatures"))
 scmInfo := Some(
