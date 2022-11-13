@@ -4,6 +4,14 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/phelps-sg/play-hmac-signatures)
 ![GitHub](https://img.shields.io/github/license/phelps-sg/play-hmac-signatures?color=blue)
 
+## Installation
+
+Add the following to `build.sbt`
+
+~~~
+libraryDependencies += "com.mesonomics" % "play-hmac-signatures" % "0.2"
+~~~
+
 ## Example usage
 
 To validate an HMAC signature in a play controller mixin the `HMACSignatureHelpers` trait.
