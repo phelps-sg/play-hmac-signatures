@@ -29,7 +29,6 @@ object Dependencies extends AutoPlugin {
   ] =
     Seq(
       libraryDependencies ++= Seq(
-        "com.fasterxml.jackson.core" % "jackson-databind" % jackson,
         "com.typesafe.play" %% "play" % play,
         "com.google.inject" % "guice" % guice,
         "org.scalactic" %% "scalactic" % scalatic,
