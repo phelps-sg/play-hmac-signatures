@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Steve Phelps
+ */
+
 import com.mesonomics.playhmacsignatures.{
   HmacSHA256SignatureVerifier,
   InvalidSignatureException
@@ -8,6 +12,7 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.xml.bind.DatatypeConverter
+
 import scala.util.{Failure, Success}
 
 class ServiceTests extends AnyWordSpecLike with should.Matchers {

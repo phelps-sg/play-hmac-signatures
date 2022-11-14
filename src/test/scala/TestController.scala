@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Steve Phelps
+ */
+
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
   HMACSignatureHelpers,

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022 Steve Phelps
+ */
+
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.util.ByteString
@@ -16,6 +20,7 @@ import play.api.test.Helpers.{POST, defaultAwaitTimeout, status}
 import play.api.test.{FakeRequest, Helpers}
 
 import scala.collection.immutable.ArraySeq
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ControllerTests extends AnyWordSpecLike with should.Matchers {
