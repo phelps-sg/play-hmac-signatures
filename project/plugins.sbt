@@ -13,3 +13,5 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.5")
 ThisBuild / libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
+
+addDependencyTreePlugin

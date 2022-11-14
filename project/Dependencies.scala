@@ -16,6 +16,7 @@ object Dependencies extends AutoPlugin {
     val scalatic = "3.2.14"
     val scalaTest = "3.2.14"
     val scalaTestPlus = "5.1.0"
+    val jackson = "2.13.4"
   }
 
   override def trigger: PluginTrigger = allRequirements
@@ -27,6 +28,9 @@ object Dependencies extends AutoPlugin {
     Def.Setting[_ >: Seq[ModuleID] with Seq[Resolver] <: Seq[Serializable]]
   ] =
     Seq(
+      dependencyOverrides ++= Seq(
+        "com.fasterxml.jackson.core" % "jackson-databind" % jackson
+      ),
       libraryDependencies ++= Seq(
         "com.typesafe.play" %% "play" % play,
         "com.google.inject" % "guice" % guice,
