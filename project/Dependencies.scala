@@ -28,10 +28,8 @@ object Dependencies extends AutoPlugin {
     Def.Setting[_ >: Seq[ModuleID] with Seq[Resolver] <: Seq[Serializable]]
   ] =
     Seq(
-      dependencyOverrides ++= Seq(
-        "com.fasterxml.jackson.core" % "jackson-databind" % jackson
-      ),
       libraryDependencies ++= Seq(
+        "com.fasterxml.jackson.core" % "jackson-databind" % jackson,
         "com.typesafe.play" %% "play" % play,
         "com.google.inject" % "guice" % guice,
         "org.scalactic" %% "scalactic" % scalatic,
