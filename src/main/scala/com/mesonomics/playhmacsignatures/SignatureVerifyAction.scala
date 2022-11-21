@@ -133,19 +133,23 @@ abstract class SignatureVerifyAction(
       config.get[String](signingSecretConfigKey)
     )(_, _, _)
 
+  protected def getTimestamp[A](request: Request[A]): Option[Long] =
+    request.headers.get(headerKeyTimestamp) flatMap {
+      _.toLongOption
+    }
+
+  protected def getSignature[A](request: Request[A]): Option[ByteString] =
+    request.headers.get(headerKeySignature) map {
+      ByteString(_)
+    }
+
   override protected def executionContext: ExecutionContext = ec
 
   override protected def refine[A](
       request: Request[A]
   ): Future[Either[Result, SignedRequest[A]]] = {
-
-    val timestamp = request.headers.get(headerKeyTimestamp) flatMap {
-      _.toLongOption
-    }
-    val signature = request.headers.get(headerKeySignature) map {
-      ByteString(_)
-    }
-
+    val timestamp = getTimestamp(request)
+    val signature = getSignature(request)
     (timestamp, signature) match {
       case (Some(timestamp), Some(signature)) =>
         Future.successful {
