@@ -26,7 +26,7 @@ import scala.util.{Failure, Success, Try}
   *   The body content type
   */
 class SignedRequest[A](
-    val validateSignature: String => Try[String],
+    val validateSignature: ByteString => Try[ByteString],
     request: Request[A]
 ) extends WrappedRequest[A](request)
 
@@ -95,8 +95,8 @@ object SignatureVerifyAction {
       *   otherwise if the signature is invalid then result in `Failure`.
       */
     def validateSignatureAgainstBody[T](parser: Array[Byte] => T): Try[T] = {
-      val raw = signedRequest.body.utf8String
-      signedRequest.validateSignature(raw) map { _ =>
+      val rawBody: ByteString = signedRequest.body
+      signedRequest.validateSignature(rawBody) map { _ =>
         parser(signedRequest.body.toArray)
       }
     }
@@ -128,7 +128,7 @@ abstract class SignatureVerifyAction(
   val headerKeySignature: String
   val signingSecretConfigKey: String
 
-  protected val validate: (Long, String, String) => Try[String] =
+  protected val validate: (Long, ByteString, String) => Try[ByteString] =
     signatureVerifierService.validate(
       config.get[String](signingSecretConfigKey)
     )(_, _, _)
@@ -147,7 +147,8 @@ abstract class SignatureVerifyAction(
     (timestamp, signature) match {
       case (Some(timestamp), Some(signature)) =>
         Future.successful {
-          val callback = (body: String) => validate(timestamp, body, signature)
+          val callback =
+            (body: ByteString) => validate(timestamp, body, signature)
           Right(new SignedRequest[A](callback, request))
         }
       case _ =>

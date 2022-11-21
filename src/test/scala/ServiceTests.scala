@@ -2,6 +2,7 @@
  * Copyright (c) 2022 Steve Phelps
  */
 
+import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
   HmacSHA256SignatureVerifier,
   InvalidSignatureException
@@ -25,7 +26,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       val verifier = new HmacSHA256SignatureVerifier()
       val testSecret = "test-secret"
       val testSignature = "test-signature"
-      val testBody = "test-body"
+      val testBody = ByteString("test-body")
       val result = verifier.validate(testSecret)(
         timestamp,
         testBody,
@@ -39,9 +40,9 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       val verifier = new HmacSHA256SignatureVerifier()
       val algorithm = "HmacSHA256"
       val testSecret = "test-secret"
-      val testBody = "test-body"
+      val testBody = ByteString("test-body")
       val secret = new SecretKeySpec(testSecret.getBytes, algorithm)
-      val payload = s"v0:$timestamp:$testBody"
+      val payload = s"v0:$timestamp:${testBody.utf8String}"
       val mac = Mac.getInstance(algorithm)
       mac.init(secret)
       val signatureBytes = mac.doFinal(payload.getBytes)
