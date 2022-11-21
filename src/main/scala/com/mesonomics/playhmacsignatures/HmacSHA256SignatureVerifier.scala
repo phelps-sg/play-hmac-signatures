@@ -13,7 +13,7 @@ case object InvalidSignatureException extends Exception("Invalid signature")
 
 @ImplementedBy(classOf[HmacSHA256SignatureVerifier])
 trait SignatureVerifierService {
-  def validate(signingSecret: String)(
+  def validate(payload: (Long, ByteString) => String)(signingSecret: String)(
       timestamp: Long,
       body: ByteString,
       signature: ByteString
@@ -26,6 +26,8 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
   val algorithm = "HmacSHA256"
 
   def validate(
+      payload: (Long, ByteString) => String
+  )(
       signingSecret: String
   )(
       timestamp: Long,
@@ -37,12 +39,11 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
     import javax.xml.bind.DatatypeConverter
 
     val secret = new SecretKeySpec(signingSecret.getBytes, algorithm)
-    val payload = s"v0:$timestamp:${body.utf8String}"
 
     val mac = Mac.getInstance(algorithm)
     mac.init(secret)
 
-    val signatureBytes = mac.doFinal(payload.getBytes)
+    val signatureBytes = mac.doFinal(payload(timestamp, body).getBytes)
     val expectedSignature = ByteString(
       s"v0=${DatatypeConverter.printHexBinary(signatureBytes).toLowerCase}"
     )

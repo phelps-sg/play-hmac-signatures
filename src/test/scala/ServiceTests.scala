@@ -2,6 +2,7 @@
  * Copyright (c) 2022 Steve Phelps
  */
 
+import TestController.payload
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
   HmacSHA256SignatureVerifier,
@@ -27,7 +28,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       val testSecret = "test-secret"
       val testSignature = ByteString("test-signature")
       val testBody = ByteString("test-body")
-      val result = verifier.validate(testSecret)(
+      val result = verifier.validate(payload)(testSecret)(
         timestamp,
         testBody,
         testSignature
@@ -42,15 +43,15 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       val testSecret = "test-secret"
       val testBody = ByteString("test-body")
       val secret = new SecretKeySpec(testSecret.getBytes, algorithm)
-      val payload = s"v0:$timestamp:${testBody.utf8String}"
+      val testPayload = s"v0:$timestamp:${testBody.utf8String}"
       val mac = Mac.getInstance(algorithm)
       mac.init(secret)
-      val signatureBytes = mac.doFinal(payload.getBytes)
+      val signatureBytes = mac.doFinal(testPayload.getBytes)
       val signature = ByteString(
         f"v0=${DatatypeConverter.printHexBinary(signatureBytes).toLowerCase}"
       )
       val result =
-        verifier.validate(testSecret)(timestamp, testBody, signature)
+        verifier.validate(payload)(testSecret)(timestamp, testBody, signature)
       result should matchPattern { case Success(`testBody`) => }
     }
   }

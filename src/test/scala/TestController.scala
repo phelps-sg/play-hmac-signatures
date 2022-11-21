@@ -12,6 +12,11 @@ import play.api.mvc.{Action, BaseController, ControllerComponents}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+object TestController {
+  def payload(timestamp: Long, body: ByteString): String =
+    s"v0:$timestamp:${body.utf8String}"
+}
+
 class TestController(
     val controllerComponents: ControllerComponents,
     val signatureVerifyAction: SlackSignatureVerifyAction

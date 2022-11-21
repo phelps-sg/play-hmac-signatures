@@ -69,8 +69,12 @@ class ControllerTests
     "return a 401 error when supplying invalid signatures" in {
 
       (mockService
-        .validate(_: String)(_: Long, _: ByteString, _: ByteString))
-        .expects(*, *, *, *)
+        .validate(_: (Long, ByteString) => String)(_: String)(
+          _: Long,
+          _: ByteString,
+          _: ByteString
+        ))
+        .expects(*, *, *, *, *)
         .returning(Failure(InvalidSignatureException))
 
       val fakeRequest = FakeRequest(POST, "/")
@@ -86,8 +90,12 @@ class ControllerTests
     "return success when supplying valid signatures" in {
 
       (mockService
-        .validate(_: String)(_: Long, _: ByteString, _: ByteString))
-        .expects(*, *, *, *)
+        .validate(_: (Long, ByteString) => String)(_: String)(
+          _: Long,
+          _: ByteString,
+          _: ByteString
+        ))
+        .expects(*, *, *, *, *)
         .returning(Success(ByteString(message)))
 
       val fakeRequest = FakeRequest(POST, "/")
