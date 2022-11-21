@@ -127,12 +127,11 @@ abstract class SignatureVerifyAction(
   val headerKeyTimestamp: String
   val headerKeySignature: String
   val signingSecretConfigKey: String
-
-  def payload(timestamp: Long, body: ByteString): String =
-    s"v0:$timestamp:${body.utf8String}"
+  def payload(timestamp: Long, body: ByteString): String
+  def expectedSignature(macBytes: Array[Byte]): ByteString
 
   protected val validate: (Long, ByteString, ByteString) => Try[ByteString] =
-    signatureVerifierService.validate(payload)(
+    signatureVerifierService.validate(payload)(expectedSignature)(
       config.get[String](signingSecretConfigKey)
     )(_, _, _)
 

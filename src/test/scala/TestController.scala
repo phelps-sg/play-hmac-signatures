@@ -10,11 +10,16 @@ import com.mesonomics.playhmacsignatures.{
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, BaseController, ControllerComponents}
 
+import javax.xml.bind.DatatypeConverter
 import scala.concurrent.{ExecutionContext, Future}
 
 object TestController {
   def payload(timestamp: Long, body: ByteString): String =
     s"v0:$timestamp:${body.utf8String}"
+  def expectedSignature(macBytes: Array[Byte]): ByteString =
+    ByteString(
+      s"v0=${DatatypeConverter.printHexBinary(macBytes).toLowerCase}"
+    )
 }
 
 class TestController(
