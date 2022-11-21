@@ -16,6 +16,7 @@ object Dependencies extends AutoPlugin {
     val scalatic = "3.2.14"
     val scalaTest = "3.2.14"
     val scalaTestPlus = "5.1.0"
+    val scalaMock = "5.2.0"
     val jackson = "2.13.4"
   }
 
@@ -33,6 +34,7 @@ object Dependencies extends AutoPlugin {
         "com.google.inject" % "guice" % guice,
         "org.scalactic" %% "scalactic" % scalatic,
         "org.scalatest" %% "scalatest" % scalaTest % Test,
+        "org.scalamock" %% "scalamock" % scalaMock % Test,
         "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlus % Test
       )
     )

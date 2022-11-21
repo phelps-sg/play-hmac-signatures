@@ -6,28 +6,33 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
-  HmacSHA256SignatureVerifier,
+  InvalidSignatureException,
+  SignatureVerifierService,
   SlackSignatureVerifyAction
 }
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.Configuration
-import play.api.http.Status.UNAUTHORIZED
+import play.api.http.Status.{OK, UNAUTHORIZED}
 import play.api.libs.json.Json
 import play.api.mvc.BodyParsers
 import play.api.test.Helpers.{POST, defaultAwaitTimeout, status}
 import play.api.test.{FakeRequest, Helpers}
 
 import scala.collection.immutable.ArraySeq
-
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
-class ControllerTests extends AnyWordSpecLike with should.Matchers {
+class ControllerTests
+    extends AnyWordSpecLike
+    with should.Matchers
+    with MockFactory {
 
   "TestController" should {
 
-    val service = new HmacSHA256SignatureVerifier()
+    val mockService = mock[SignatureVerifierService]
     val config = Configuration("slack.signingSecret" -> "test-secret")
     implicit val system: ActorSystem = ActorSystem("ControllerTests")
     implicit val mat: Materializer = Materializer(system)
@@ -36,7 +41,7 @@ class ControllerTests extends AnyWordSpecLike with should.Matchers {
     val slackSignatureVerifyAction = new SlackSignatureVerifyAction(
       bp,
       config,
-      service
+      mockService
     )
 
     val testController = new TestController(
@@ -44,11 +49,10 @@ class ControllerTests extends AnyWordSpecLike with should.Matchers {
       slackSignatureVerifyAction
     )
 
-    val body = ByteString(
-      Json.parse(""" { "message" : "Hello world!" } """).toString()
-    )
+    val message = Json.parse(""" { "message" : "Hello world!" } """).toString()
+    val body = ByteString(message)
 
-    val invalidSignatureHeaders = Array(
+    val signatureHeaders = Array(
       ("X-Slack-Request-Timestamp", "1663156082"),
       (
         "X-Slack-Signature",
@@ -63,13 +67,37 @@ class ControllerTests extends AnyWordSpecLike with should.Matchers {
     }
 
     "return a 401 error when supplying invalid signatures" in {
+
+      (mockService
+        .validate(_: String)(_: String, _: String, _: String))
+        .expects(*, *, *, *)
+        .returning(Failure(InvalidSignatureException))
+
       val fakeRequest = FakeRequest(POST, "/")
         .withBody(body)
         .withHeaders(
-          ArraySeq.unsafeWrapArray(invalidSignatureHeaders): _*
+          ArraySeq.unsafeWrapArray(signatureHeaders): _*
         )
+
       val result = testController.test().apply(fakeRequest)
       status(result) mustEqual UNAUTHORIZED
+    }
+
+    "return success when supplying valid signatures" in {
+
+      (mockService
+        .validate(_: String)(_: String, _: String, _: String))
+        .expects(*, *, *, *)
+        .returning(Success(message))
+
+      val fakeRequest = FakeRequest(POST, "/")
+        .withBody(body)
+        .withHeaders(
+          ArraySeq.unsafeWrapArray(signatureHeaders): _*
+        )
+
+      val result = testController.test().apply(fakeRequest)
+      status(result) mustEqual OK
     }
 
   }

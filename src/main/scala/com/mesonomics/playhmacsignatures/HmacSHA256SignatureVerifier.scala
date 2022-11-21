@@ -12,7 +12,7 @@ case object InvalidSignatureException extends Exception("Invalid signature")
 
 @ImplementedBy(classOf[HmacSHA256SignatureVerifier])
 trait SignatureVerifierService {
-  def validate(signingSecret: => String)(
+  def validate(signingSecret: String)(
       timestamp: String,
       body: String,
       signature: String
@@ -25,7 +25,7 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
   val algorithm = "HmacSHA256"
 
   def validate(
-      signingSecret: => String
+      signingSecret: String
   )(
       timestamp: String,
       body: String,
