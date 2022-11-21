@@ -32,17 +32,28 @@ class ControllerTests extends AnyWordSpecLike with should.Matchers {
     implicit val system: ActorSystem = ActorSystem("ControllerTests")
     implicit val mat: Materializer = Materializer(system)
     val bp = new BodyParsers.Default()
+
     val slackSignatureVerifyAction = new SlackSignatureVerifyAction(
       bp,
       config,
       service
     )
+
     val testController = new TestController(
       Helpers.stubControllerComponents(),
       slackSignatureVerifyAction
     )
+
     val body = ByteString(
       Json.parse(""" { "message" : "Hello world!" } """).toString()
+    )
+
+    val invalidSignatureHeaders = Array(
+      ("X-Slack-Request-Timestamp", "1663156082"),
+      (
+        "X-Slack-Signature",
+        "v0=d1c387a20da72e5e07de4e2fb7e93cd9b44c2caa118868aad99c3b20c93de73a"
+      )
     )
 
     "return a 401 error when not supplying signatures" in {
@@ -52,13 +63,6 @@ class ControllerTests extends AnyWordSpecLike with should.Matchers {
     }
 
     "return a 401 error when supplying invalid signatures" in {
-      val invalidSignatureHeaders = Array(
-        ("X-Slack-Request-Timestamp", "1663156082"),
-        (
-          "X-Slack-Signature",
-          "v0=d1c387a20da72e5e07de4e2fb7e93cd9b44c2caa118868aad99c3b20c93de73a"
-        )
-      )
       val fakeRequest = FakeRequest(POST, "/")
         .withBody(body)
         .withHeaders(
