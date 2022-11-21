@@ -69,7 +69,7 @@ class ControllerTests
     "return a 401 error when supplying invalid signatures" in {
 
       (mockService
-        .validate(_: String)(_: Long, _: ByteString, _: String))
+        .validate(_: String)(_: Long, _: ByteString, _: ByteString))
         .expects(*, *, *, *)
         .returning(Failure(InvalidSignatureException))
 
@@ -86,7 +86,7 @@ class ControllerTests
     "return success when supplying valid signatures" in {
 
       (mockService
-        .validate(_: String)(_: Long, _: ByteString, _: String))
+        .validate(_: String)(_: Long, _: ByteString, _: ByteString))
         .expects(*, *, *, *)
         .returning(Success(ByteString(message)))
 

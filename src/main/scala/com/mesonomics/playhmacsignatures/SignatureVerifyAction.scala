@@ -128,7 +128,7 @@ abstract class SignatureVerifyAction(
   val headerKeySignature: String
   val signingSecretConfigKey: String
 
-  protected val validate: (Long, ByteString, String) => Try[ByteString] =
+  protected val validate: (Long, ByteString, ByteString) => Try[ByteString] =
     signatureVerifierService.validate(
       config.get[String](signingSecretConfigKey)
     )(_, _, _)
@@ -142,7 +142,7 @@ abstract class SignatureVerifyAction(
     val timestamp = request.headers.get(headerKeyTimestamp) flatMap {
       _.toLongOption
     }
-    val signature = request.headers.get(headerKeySignature)
+    val signature = request.headers.get(headerKeySignature) map { ByteString(_) }
 
     (timestamp, signature) match {
       case (Some(timestamp), Some(signature)) =>

@@ -16,7 +16,7 @@ trait SignatureVerifierService {
   def validate(signingSecret: String)(
       timestamp: Long,
       body: ByteString,
-      signature: String
+      signature: ByteString,
   ): Try[ByteString]
 }
 
@@ -30,7 +30,7 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
   )(
       timestamp: Long,
       body: ByteString,
-      signature: String
+      signature: ByteString
   ): Try[ByteString] = {
     import javax.crypto.Mac
     import javax.crypto.spec.SecretKeySpec
@@ -45,7 +45,7 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
     val signatureBytes = mac.doFinal(payload.getBytes)
     val expectedSignature =
       s"v0=${DatatypeConverter.printHexBinary(signatureBytes).toLowerCase}"
-    if (signature == expectedSignature) {
+    if (signature sameElements expectedSignature) {
       Success(body)
     } else {
       Failure(InvalidSignatureException)

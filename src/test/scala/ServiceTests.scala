@@ -25,7 +25,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
     "throw an exception for an incorrect signature" in {
       val verifier = new HmacSHA256SignatureVerifier()
       val testSecret = "test-secret"
-      val testSignature = "test-signature"
+      val testSignature = ByteString("test-signature")
       val testBody = ByteString("test-body")
       val result = verifier.validate(testSecret)(
         timestamp,
@@ -46,8 +46,9 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       val mac = Mac.getInstance(algorithm)
       mac.init(secret)
       val signatureBytes = mac.doFinal(payload.getBytes)
-      val signature =
+      val signature = ByteString(
         f"v0=${DatatypeConverter.printHexBinary(signatureBytes).toLowerCase}"
+      )
       val result =
         verifier.validate(testSecret)(timestamp, testBody, signature)
       result should matchPattern { case Success(`testBody`) => }
