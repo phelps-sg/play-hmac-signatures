@@ -5,7 +5,7 @@
 package com.mesonomics.playhmacsignatures
 
 import akka.util.ByteString
-import SignatureVerifyAction.SignedRequestByteStringValidator
+import com.mesonomics.playhmacsignatures.SignatureVerifyAction.SignedRequestByteStringValidator
 import play.api.mvc.Results.Unauthorized
 import play.api.mvc._
 import play.api.{Configuration, Logging}
@@ -128,7 +128,7 @@ abstract class SignatureVerifyAction(
   val headerKeySignature: String
   val signingSecretConfigKey: String
 
-  protected val validate: (String, String, String) => Try[String] =
+  protected val validate: (Long, String, String) => Try[String] =
     signatureVerifierService.validate(
       config.get[String](signingSecretConfigKey)
     )(_, _, _)
@@ -139,7 +139,9 @@ abstract class SignatureVerifyAction(
       request: Request[A]
   ): Future[Either[Result, SignedRequest[A]]] = {
 
-    val timestamp = request.headers.get(headerKeyTimestamp)
+    val timestamp = request.headers.get(headerKeyTimestamp) flatMap {
+      _.toLongOption
+    }
     val signature = request.headers.get(headerKeySignature)
 
     (timestamp, signature) match {

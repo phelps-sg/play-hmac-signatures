@@ -9,15 +9,16 @@ import com.mesonomics.playhmacsignatures.{
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpecLike
 
+import java.time.OffsetDateTime
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.xml.bind.DatatypeConverter
-
 import scala.util.{Failure, Success}
 
 class ServiceTests extends AnyWordSpecLike with should.Matchers {
 
-  val timestampStr: String = "02/01/2018 - 13:45:30 +0000"
+  val timestampStr: String = "2017-09-15T13:50:30.526+05:30"
+  val timestamp: Long = OffsetDateTime.parse(timestampStr).toEpochSecond
 
   "HmacSHA256SignatureVerify" should {
     "throw an exception for an incorrect signature" in {
@@ -26,7 +27,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       val testSignature = "test-signature"
       val testBody = "test-body"
       val result = verifier.validate(testSecret)(
-        timestampStr,
+        timestamp,
         testBody,
         testSignature
       )
@@ -40,14 +41,14 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       val testSecret = "test-secret"
       val testBody = "test-body"
       val secret = new SecretKeySpec(testSecret.getBytes, algorithm)
-      val payload = s"v0:$timestampStr:$testBody"
+      val payload = s"v0:$timestamp:$testBody"
       val mac = Mac.getInstance(algorithm)
       mac.init(secret)
       val signatureBytes = mac.doFinal(payload.getBytes)
       val signature =
         f"v0=${DatatypeConverter.printHexBinary(signatureBytes).toLowerCase}"
       val result =
-        verifier.validate(testSecret)(timestampStr, testBody, signature)
+        verifier.validate(testSecret)(timestamp, testBody, signature)
       result should matchPattern { case Success(`testBody`) => }
     }
   }
