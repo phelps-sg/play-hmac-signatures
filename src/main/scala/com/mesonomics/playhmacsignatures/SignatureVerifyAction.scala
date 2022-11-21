@@ -53,12 +53,13 @@ trait HMACSignatureHelpers {
     *   The body content type expected by the body processor
     */
   def validateSignatureParseAndProcess[T](
-      signatureVerifyAction: SignatureVerifyAction
-  )(
       bodyParser: Array[Byte] => T
   )(
       bodyProcessor: T => Future[Result]
-  )(implicit ec: ExecutionContext): Action[ByteString] =
+  )(implicit
+      ec: ExecutionContext,
+      signatureVerifyAction: SignatureVerifyAction
+  ): Action[ByteString] =
     signatureVerifyAction.async(parse.byteString) { request =>
       request
         .validateSignatureAgainstBody(bodyParser)
