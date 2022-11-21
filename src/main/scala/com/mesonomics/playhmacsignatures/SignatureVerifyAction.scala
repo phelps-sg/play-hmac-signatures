@@ -142,7 +142,9 @@ abstract class SignatureVerifyAction(
     val timestamp = request.headers.get(headerKeyTimestamp) flatMap {
       _.toLongOption
     }
-    val signature = request.headers.get(headerKeySignature) map { ByteString(_) }
+    val signature = request.headers.get(headerKeySignature) map {
+      ByteString(_)
+    }
 
     (timestamp, signature) match {
       case (Some(timestamp), Some(signature)) =>
