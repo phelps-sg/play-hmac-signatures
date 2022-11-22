@@ -136,17 +136,10 @@ abstract class SignatureVerifyAction(
       config.get[String](signingSecretConfigKey)
     )(_, _, _)
 
-  protected def getTimestamp[A](request: Request[A]): Option[Long] =
-    request.headers.get(headerKeyTimestamp) flatMap { timestampStr =>
-      try {
-        Some(timestampStr.toLong)
-      } catch {
-        case _: NumberFormatException =>
-          None
-        case ex: Exception =>
-          throw ex
-      }
-    }
+  protected def getTimestamp[A](request: Request[A]): Option[Long] = {
+    import Utils.LongStringScala212
+    request.headers.get(headerKeyTimestamp) flatMap { _.toLongOpt }
+  }
 
   protected def getSignature[A](request: Request[A]): Option[ByteString] =
     request.headers.get(headerKeySignature) map {
