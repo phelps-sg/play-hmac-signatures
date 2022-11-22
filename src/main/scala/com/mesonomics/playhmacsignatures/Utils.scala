@@ -6,9 +6,8 @@ package com.mesonomics.playhmacsignatures
 
 object Utils {
 
-  /**
-   * Conversion from string to Option[Long] for compatibility with Scala 2.12
-   */
+  /** Conversion from string to Option[Long] for compatibility with Scala 2.12
+    */
   implicit class LongStringScala212(number: String) {
     def toLongOpt: Option[Long] = {
       try {
