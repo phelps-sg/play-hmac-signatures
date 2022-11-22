@@ -143,7 +143,7 @@ abstract class SignatureVerifyAction(
       } catch {
         case _: NumberFormatException =>
           None
-        case ex =>
+        case ex: Exception =>
           throw ex
       }
     }
