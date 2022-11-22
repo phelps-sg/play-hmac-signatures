@@ -3,9 +3,9 @@
 name: CI
 on:
   pull_request:
-    branches: [ '**' ]
+    branches: [ main, '**' ]
   push:
-    branches: [ '**' ]
+    branches: [ main ]
 
 jobs:
   validate:
@@ -28,18 +28,24 @@ jobs:
     name: Build & Test
     needs: [ validate ]
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        scala: [ '2.12.17', '2.13.10' ]
+
     steps:
       - uses: actions/checkout@v3
 
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
-          distribution: corretto
-          java-version: '11'
+          distribution: 'corretto'
+          java-version: '8'
           cache: 'sbt'
 
       - name: Build & Test
-        run: sbt testWithCoverage
+        run: sbt ++${{ matrix.scala }} testWithCoverage
 
       - name: Upload coverage report (Cobertura)
         uses: actions/upload-artifact@v3.1.0
@@ -52,6 +58,39 @@ jobs:
         with:
           name: scoverage-report-html
           path: ${{github.workspace}}/target/scala-2.13/scoverage-report/
+
+  optional-build:
+    name: Build (Optional)
+    continue-on-error: ${{ matrix.experimental }}
+    needs: [ validate ]
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        distribution: [ 'corretto' ]
+        jdk: [ '11' ]
+        scala: [ '2.12.17', '2.13.10' ]
+        experimental: [ false ]
+        include:
+          - jdk: '17'
+            distribution: 'corretto'
+            scala: '2.13.10'
+            experimental: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.jdk }}
+          cache: 'sbt'
+
+      - name: Perform Build / Test
+        run: sbt ++${{ matrix.scala }} compile test
 
   coverage:
     name: Coverage Report
@@ -75,3 +114,11 @@ jobs:
           show_class_names: true
           link_missing_lines: true
           minimum_coverage: 75
+
+  ready-to-merge:
+    name: Ready to Merge
+    if: ${{ github.event.pull_request }}
+    needs: [ optional-build, coverage ]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Ready to merge.'
