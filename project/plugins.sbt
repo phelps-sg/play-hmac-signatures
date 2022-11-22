@@ -1,7 +1,11 @@
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.10.4")
-addSbtPlugin("com.github.sbt" % "sbt-pgp" % "2.1.2")
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.14")
+
+// CI Release plugin.
+// ~
+// This is an sbt plugin to help automate releases to Sonatype and Maven Central from GitHub Actions.
+// See more: https://github.com/sbt/sbt-ci-release
+addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.11")
 
 // Test Coverage plugin.
 // ~

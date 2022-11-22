@@ -1,9 +1,3 @@
-/*
- * Copyright (C) 2021 Just Play LTDA.
- * See the LICENCE.txt file distributed with this work for additional
- * information regarding copyright ownership.
- */
-
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
@@ -11,13 +5,17 @@ import sbt.plugins.JvmPlugin
 object Dependencies extends AutoPlugin {
 
   object Version {
+    val scala212 = "2.12.17"
+    val scala213 = "2.13.10"
+
     val play = "2.8.18"
     val guice = "5.1.0"
+    val jackson = "2.13.4"
+
     val scalatic = "3.2.14"
+    val scalaMock = "5.2.0"
     val scalaTest = "3.2.14"
     val scalaTestPlus = "5.1.0"
-    val scalaMock = "5.2.0"
-    val jackson = "2.13.4"
   }
 
   override def trigger: PluginTrigger = allRequirements

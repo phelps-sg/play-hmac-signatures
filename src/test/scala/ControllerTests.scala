@@ -21,7 +21,6 @@ import play.api.mvc.BodyParsers
 import play.api.test.Helpers.{POST, defaultAwaitTimeout, status}
 import play.api.test.{FakeRequest, Helpers}
 
-import scala.collection.immutable.ArraySeq
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
@@ -81,9 +80,7 @@ class ControllerTests
 
       val fakeRequest = FakeRequest(POST, "/")
         .withBody(body)
-        .withHeaders(
-          ArraySeq.unsafeWrapArray(signatureHeaders): _*
-        )
+        .withHeaders(signatureHeaders: _*)
 
       val result = testController.test().apply(fakeRequest)
       status(result) mustEqual UNAUTHORIZED
@@ -104,9 +101,7 @@ class ControllerTests
 
       val fakeRequest = FakeRequest(POST, "/")
         .withBody(body)
-        .withHeaders(
-          ArraySeq.unsafeWrapArray(signatureHeaders): _*
-        )
+        .withHeaders(signatureHeaders: _*)
 
       val result = testController.test().apply(fakeRequest)
       status(result) mustEqual OK

@@ -1,48 +1,33 @@
+import Common._
+import Dependencies.Version.scala212
+import Dependencies.Version.scala213
+
 name := """play-hmac-signatures"""
 
-version := "0.3"
-
-organization := "com.mesonomics"
-
-homepage := Some(url("https://github.com/phelps-sg/play-hmac-signatures"))
-
-scmInfo := Some(
-  ScmInfo(
-    url("https://github.com/phelps-sg/play-hmac-signatures"),
-    "git@github.com:phelps-sg/play-hmac-signatures.git"
-  )
-)
-
-developers := List(
-  Developer(
-    "phelps-sg",
-    "Steve Phelps",
-    "sphelps@sphelps.net",
-    url("https://github.com/usernamehttps://github.com/phelps-sg")
-  )
-)
-
-licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
-
-publishMavenStyle := true
-
-publishTo := Some(
-  if (isSnapshot.value)
-    Opts.resolver.sonatypeSnapshots
-  else
-    Opts.resolver.sonatypeStaging
-)
-
-enablePlugins(Dependencies)
+enablePlugins(Common, Dependencies)
 
 inThisBuild(
   List(
-    scalaVersion := "2.13.10",
+    scalaVersion := scala213,
+    crossScalaVersions := Seq(scala212, scala213),
     scalafixScalaBinaryVersion := "2.13",
+    versionScheme := Some("early-semver"),
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     scalacOptions += "-Ywarn-unused",
-    scalacOptions += "-Xcheckinit"
+    scalacOptions += "-Xcheckinit",
+    sonatypePublishTo := Some({
+      if (isSnapshot.value)
+        Opts.resolver.sonatypeOssSnapshots.head
+      else
+        Opts.resolver.sonatypeStaging
+    }),
+    scmInfo := Some(
+      ScmInfo(
+        url(s"https://github.com/$gitAccount/$repoName"),
+        s"git@github.com:$gitAccount/$repoName.git"
+      )
+    )
   )
 )
 
