@@ -137,8 +137,15 @@ abstract class SignatureVerifyAction(
     )(_, _, _)
 
   protected def getTimestamp[A](request: Request[A]): Option[Long] =
-    request.headers.get(headerKeyTimestamp) flatMap {
-      _.toLongOption
+    request.headers.get(headerKeyTimestamp) flatMap { timestampStr =>
+      try {
+        Some(timestampStr.toLong)
+      } catch {
+        case _: NumberFormatException =>
+          None
+        case ex =>
+          throw ex
+      }
     }
 
   protected def getSignature[A](request: Request[A]): Option[ByteString] =
