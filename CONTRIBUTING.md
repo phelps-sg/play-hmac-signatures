@@ -31,7 +31,7 @@ Additionally, there are issues labels you can use to navigate issues that a good
         - Introducing new, heavy external dependencies
     4. The Play Hmac Signatures design rules are the following:
         - Play is a Scala/Java framework.
-        - Scala APIs should go to `src/main/scala`, package structure is `net.sphelps.playhmacsignatures.xxxx`
+        - Scala APIs should go to `src/main/scala`, package structure is `com.mesonomics.playhmacsignatures.xxxx`
         - Features are forever, always think about whether a new feature really belongs to the core framework or if it
           should be implemented as a module.
         - Code must conform to standard style guidelines and pass all tests.
@@ -43,4 +43,4 @@ Additionally, there are issues labels you can use to navigate issues that a good
 If the pull request does not meet the above requirements then the code should **not** be merged into main, or even
 reviewed - regardless of how good or important it is. No exceptions.
 
-The pull request will be reviewed according to contributors availability.
+The pull request will be reviewed according to the contributors' availability.
