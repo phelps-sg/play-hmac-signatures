@@ -18,7 +18,7 @@ import play.api.Configuration
 import play.api.http.Status.{OK, UNAUTHORIZED}
 import play.api.libs.json.Json
 import play.api.mvc.BodyParsers
-import play.api.test.Helpers.{POST, defaultAwaitTimeout, status}
+import play.api.test.Helpers.{POST, contentAsJson, defaultAwaitTimeout, status}
 import play.api.test.{FakeRequest, Helpers}
 
 import java.time.Clock
@@ -50,6 +50,7 @@ class ControllerTests
       slackSignatureVerifyAction
     )
 
+    val messageJson = Json.parse(""" { "message" : "Hello world!" } """)
     val message = Json.parse(""" { "message" : "Hello world!" } """).toString()
     val body = ByteString(message)
 
@@ -137,6 +138,8 @@ class ControllerTests
 
       val result = testController.test().apply(fakeRequest)
       status(result) mustEqual OK
+      val resultContents = contentAsJson(result)
+      resultContents mustEqual messageJson("message")
     }
 
   }
