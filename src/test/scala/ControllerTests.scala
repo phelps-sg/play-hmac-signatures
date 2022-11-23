@@ -21,7 +21,9 @@ import play.api.mvc.BodyParsers
 import play.api.test.Helpers.{POST, defaultAwaitTimeout, status}
 import play.api.test.{FakeRequest, Helpers}
 
+import java.time.Clock
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 
 class ControllerTests
@@ -65,17 +67,47 @@ class ControllerTests
       status(result) mustEqual UNAUTHORIZED
     }
 
+    "return a 401 error when supplying empty timestamp" in {
+      val fakeRequest = FakeRequest(POST, "/").withBody(body)
+      val headersWithEmptyTimestamp = Array(
+        ("X-Slack-Request-Timestamp", ""),
+        (
+          "X-Slack-Signature",
+          "v0=d1c387a20da72e5e07de4e2fb7e93cd9b44c2caa118868aad99c3b20c93de73a"
+        )
+      )
+      val result = testController
+        .test()
+        .apply(fakeRequest.withHeaders(headersWithEmptyTimestamp: _*))
+      status(result) mustEqual UNAUTHORIZED
+    }
+
+    "return a 401 error when supplying non-numeric timestamp" in {
+      val fakeRequest = FakeRequest(POST, "/").withBody(body)
+      val headersWithEmptyTimestamp = Array(
+        ("X-Slack-Request-Timestamp", "non-numeric"),
+        (
+          "X-Slack-Signature",
+          "v0=d1c387a20da72e5e07de4e2fb7e93cd9b44c2caa118868aad99c3b20c93de73a"
+        )
+      )
+      val result = testController
+        .test()
+        .apply(fakeRequest.withHeaders(headersWithEmptyTimestamp: _*))
+      status(result) mustEqual UNAUTHORIZED
+    }
+
     "return a 401 error when supplying invalid signatures" in {
 
       (mockService
-        .validate(_: (Long, ByteString) => String)(
+        .validate(_: Clock)(_: Duration)(_: (Long, ByteString) => String)(
           _: Array[Byte] => ByteString
         )(_: String)(
           _: Long,
           _: ByteString,
           _: ByteString
         ))
-        .expects(*, *, *, *, *, *)
+        .expects(*, *, *, *, *, *, *, *)
         .returning(Failure(InvalidSignatureException))
 
       val fakeRequest = FakeRequest(POST, "/")
@@ -89,14 +121,14 @@ class ControllerTests
     "return success when supplying valid signatures" in {
 
       (mockService
-        .validate(_: (Long, ByteString) => String)(
+        .validate(_: Clock)(_: Duration)(_: (Long, ByteString) => String)(
           _: Array[Byte] => ByteString
         )(_: String)(
           _: Long,
           _: ByteString,
           _: ByteString
         ))
-        .expects(*, *, *, *, *, *)
+        .expects(*, *, *, *, *, *, *, *)
         .returning(Success(ByteString(message)))
 
       val fakeRequest = FakeRequest(POST, "/")

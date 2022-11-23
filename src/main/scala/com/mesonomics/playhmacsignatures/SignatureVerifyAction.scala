@@ -11,6 +11,8 @@ import play.api.mvc._
 import play.api.{Configuration, Logging}
 import play.core.parsers.FormUrlEncodedParser
 
+import java.time.Clock
+import scala.concurrent.duration.{Duration, DurationInt}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
@@ -119,7 +121,9 @@ object SignatureVerifyAction {
 abstract class SignatureVerifyAction(
     val parser: BodyParsers.Default,
     val config: Configuration,
-    signatureVerifierService: SignatureVerifierService
+    signatureVerifierService: SignatureVerifierService,
+    protected val clock: Clock = Clock.systemUTC(),
+    protected val timestampTolerance: Duration = 5.minutes
 )(implicit ec: ExecutionContext)
     extends ActionBuilder[SignedRequest, AnyContent]
     with ActionRefiner[Request, SignedRequest]
@@ -132,7 +136,9 @@ abstract class SignatureVerifyAction(
   def expectedSignature(macBytes: Array[Byte]): ByteString
 
   protected val validate: (Long, ByteString, ByteString) => Try[ByteString] =
-    signatureVerifierService.validate(payload)(expectedSignature)(
+    signatureVerifierService.validate(clock)(timestampTolerance)(payload)(
+      expectedSignature
+    )(
       config.get[String](signingSecretConfigKey)
     )(_, _, _)
 
