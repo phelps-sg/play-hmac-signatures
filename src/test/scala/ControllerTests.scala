@@ -51,7 +51,7 @@ class ControllerTests
     )
 
     val messageJson = Json.parse(""" { "message" : "Hello world!" } """)
-    val message = Json.parse(""" { "message" : "Hello world!" } """).toString()
+    val message = messageJson.toString()
     val body = ByteString(message)
 
     val signatureHeaders = Array(
