@@ -148,9 +148,7 @@ abstract class SignatureVerifyAction(
   }
 
   protected def getSignature[A](request: Request[A]): Option[ByteString] =
-    request.headers.get(headerKeySignature) map {
-      ByteString(_)
-    }
+    request.headers.get(headerKeySignature).map(ByteString.apply)
 
   override protected def executionContext: ExecutionContext = ec
 
