@@ -9,7 +9,7 @@
 Add the following to `build.sbt`
 
 ~~~
-libraryDependencies += "com.mesonomics" %% "play-hmac-signatures" % "0.5"
+libraryDependencies += "com.mesonomics" %% "play-hmac-signatures" % "0.5.0"
 ~~~
 
 ## Example usage
