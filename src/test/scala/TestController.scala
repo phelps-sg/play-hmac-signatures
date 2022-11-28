@@ -29,14 +29,12 @@ class TestController(
     extends BaseController
     with HMACSignatureHelpers {
 
-  private val onSignatureValid = validateSignatureParseAndProcess(Json.parse)(_)
+  private val onSignatureValid = validateSignatureAsync(Json.parse)(_)
 
-  def test: Action[ByteString] = {
-    onSignatureValid { body: JsValue =>
-      Future {
-        val message = body("message")
-        Ok(message)
-      }
+  def test: Action[ByteString] = onSignatureValid { body: JsValue =>
+    Future {
+      val message = body("message")
+      Ok(message)
     }
   }
 }

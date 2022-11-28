@@ -54,7 +54,7 @@ trait HMACSignatureHelpers {
     * @tparam T
     *   The body content type expected by the body processor
     */
-  def validateSignatureParseAndProcess[T](
+  def validateSignatureAsync[T](
       bodyParser: Array[Byte] => T
   )(
       bodyProcessor: T => Future[Result]
