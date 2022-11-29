@@ -17,12 +17,14 @@ import scala.util.{Failure, Success, Try}
 case object InvalidSignatureException extends Exception("Invalid signature")
 case object InvalidTimestampException extends Exception("Invalid timestamp")
 
+final case class EpochSeconds(value: Long) extends AnyVal
+
 @ImplementedBy(classOf[HmacSHA256SignatureVerifier])
 trait SignatureVerifierService {
   def validate(clock: Clock)(timestampTolerance: Duration)(
-      payload: (Long, ByteString) => String
+      payload: (EpochSeconds, ByteString) => String
   )(expectedSignature: Array[Byte] => ByteString)(signingSecret: String)(
-      timestamp: Long,
+      timestamp: EpochSeconds,
       body: ByteString,
       signature: ByteString
   ): Try[ByteString]
@@ -38,20 +40,20 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
   )(
       timestampTolerance: Duration
   )(
-      payload: (Long, ByteString) => String
+      payload: (EpochSeconds, ByteString) => String
   )(
       expectedSignature: Array[Byte] => ByteString
   )(
       signingSecret: String
   )(
-      timestamp: Long,
+      timestamp: EpochSeconds,
       body: ByteString,
       signature: ByteString
   ): Try[ByteString] = {
 
     if (
       abs(
-        timestamp - clock.instant().getEpochSecond
+        timestamp.value - clock.instant().getEpochSecond
       ) > timestampTolerance.toSeconds
     ) {
       Failure(InvalidTimestampException)

@@ -132,19 +132,23 @@ abstract class SignatureVerifyAction(
   val headerKeyTimestamp: String
   val headerKeySignature: String
   val signingSecretConfigKey: String
-  def payload(timestamp: Long, body: ByteString): String
+  def payload(timestamp: EpochSeconds, body: ByteString): String
   def expectedSignature(macBytes: Array[Byte]): ByteString
 
-  protected val validate: (Long, ByteString, ByteString) => Try[ByteString] =
+  protected val validate
+      : (EpochSeconds, ByteString, ByteString) => Try[ByteString] =
     signatureVerifierService.validate(clock)(timestampTolerance)(payload)(
       expectedSignature
     )(
       config.get[String](signingSecretConfigKey)
     )(_, _, _)
 
-  protected def getTimestamp[A](request: Request[A]): Option[Long] = {
+  protected def getTimestamp[A](request: Request[A]): Option[EpochSeconds] = {
     import Utils.LongStringScala212
-    request.headers.get(headerKeyTimestamp) flatMap { _.toLongOpt }
+    for {
+      timestampStr <- request.headers.get(headerKeyTimestamp)
+      t <- timestampStr.toLongOpt
+    } yield EpochSeconds(t)
   }
 
   protected def getSignature[A](request: Request[A]): Option[ByteString] =

@@ -5,6 +5,7 @@
 import TestController.{expectedSignature, payload}
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
+  EpochSeconds,
   HmacSHA256SignatureVerifier,
   InvalidSignatureException,
   InvalidTimestampException
@@ -23,7 +24,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
 
   val timestampStr: String = "2017-09-15T13:50:30.526+05:30"
   val offsetTime: OffsetDateTime = OffsetDateTime.parse(timestampStr)
-  val timestamp: Long = offsetTime.toEpochSecond
+  val timestamp: EpochSeconds = EpochSeconds(offsetTime.toEpochSecond)
   val clock: Clock =
     Clock.fixed(offsetTime.toInstant, offsetTime.toZonedDateTime.getZone)
   val timestampTolerance: FiniteDuration = 5.minutes
@@ -33,7 +34,11 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
   val secret: SecretKeySpec = new SecretKeySpec(testSecret.getBytes, algorithm)
   val testBody: ByteString = ByteString("test-body")
 
-  def validSignature(body: ByteString, timestamp: Long): ByteString = {
+  def toEpochSeconds(timestamp: String): EpochSeconds = EpochSeconds(
+    OffsetDateTime.parse(timestamp).toEpochSecond
+  )
+
+  def validSignature(body: ByteString, timestamp: EpochSeconds): ByteString = {
     val testPayload: String = s"v0:$timestamp:${body.utf8String}"
     val mac: Mac = Mac.getInstance(algorithm)
     mac.init(secret)
@@ -73,8 +78,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
     "return success for a stale timestamp within tolerance" in {
       val verifier = new HmacSHA256SignatureVerifier()
       val timestamp = "2017-09-15T13:49:30.526+05:30"
-      val slightlyStaleTimestamp =
-        OffsetDateTime.parse(timestamp).toEpochSecond
+      val slightlyStaleTimestamp = toEpochSeconds(timestamp)
       val result = verifier.validate(clock)(timestampTolerance)(payload)(
         expectedSignature
       )(testSecret)(
@@ -88,8 +92,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
     "return failure for a stale timestamp" in {
       val verifier = new HmacSHA256SignatureVerifier()
       val invalidTimestampStr = "2017-09-15T13:40:30.526+05:30"
-      val staleTimestamp =
-        OffsetDateTime.parse(invalidTimestampStr).toEpochSecond
+      val staleTimestamp = toEpochSeconds(invalidTimestampStr)
       val result = verifier.validate(clock)(timestampTolerance)(payload)(
         expectedSignature
       )(testSecret)(
@@ -103,8 +106,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
     "return failure for a timestamp in the future" in {
       val verifier = new HmacSHA256SignatureVerifier()
       val invalidTimestampStr = "2017-09-15T13:58:30.526+05:30"
-      val futureTimestamp =
-        OffsetDateTime.parse(invalidTimestampStr).toEpochSecond
+      val futureTimestamp = toEpochSeconds(invalidTimestampStr)
       val result = verifier.validate(clock)(timestampTolerance)(payload)(
         expectedSignature
       )(testSecret)(
