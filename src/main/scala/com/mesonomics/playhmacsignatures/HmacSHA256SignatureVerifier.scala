@@ -60,7 +60,7 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
   ): Try[ByteString] =
     for {
       _ <- validateTimestamp(clock)(timestampTolerance)(timestamp)
-      body <- validateSignature(payload)(expectedSignature)(signingSecret)(
+      _ <- validateSignature(payload)(expectedSignature)(signingSecret)(
         timestamp,
         body,
         signature
