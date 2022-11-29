@@ -133,10 +133,10 @@ abstract class SignatureVerifyAction(
   val headerKeySignature: String
   val signingSecretConfigKey: String
   def payload(timestamp: EpochSeconds, body: ByteString): String
-  def expectedSignature(macBytes: Array[Byte]): ByteString
+  def expectedSignature(macBytes: Array[Byte]): HmacSignature
 
   protected val validate
-      : (EpochSeconds, ByteString, ByteString) => Try[ByteString] =
+      : (EpochSeconds, ByteString, HmacSignature) => Try[ByteString] =
     signatureVerifierService.validate(clock)(timestampTolerance)(payload)(
       expectedSignature
     )(
@@ -151,8 +151,10 @@ abstract class SignatureVerifyAction(
     } yield EpochSeconds(t)
   }
 
-  protected def getSignature[A](request: Request[A]): Option[ByteString] =
-    request.headers.get(headerKeySignature).map(ByteString.apply)
+  protected def getSignature[A](request: Request[A]): Option[HmacSignature] =
+    request.headers.get(headerKeySignature) map { str =>
+      HmacSignature(ByteString(str))
+    }
 
   override protected def executionContext: ExecutionContext = ec
 

@@ -7,6 +7,7 @@ import akka.stream.Materializer
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
   EpochSeconds,
+  HmacSignature,
   InvalidSignatureException,
   SignatureVerifierService,
   SlackSignatureVerifyAction
@@ -105,11 +106,11 @@ class ControllerTests
         .validate(_: Clock)(_: Duration)(
           _: (EpochSeconds, ByteString) => String
         )(
-          _: Array[Byte] => ByteString
+          _: Array[Byte] => HmacSignature
         )(_: String)(
           _: EpochSeconds,
           _: ByteString,
-          _: ByteString
+          _: HmacSignature
         ))
         .expects(*, *, *, *, *, *, *, *)
         .returning(Failure(InvalidSignatureException))
@@ -128,11 +129,11 @@ class ControllerTests
         .validate(_: Clock)(_: Duration)(
           _: (EpochSeconds, ByteString) => String
         )(
-          _: Array[Byte] => ByteString
+          _: Array[Byte] => HmacSignature
         )(_: String)(
           _: EpochSeconds,
           _: ByteString,
-          _: ByteString
+          _: HmacSignature
         ))
         .expects(*, *, *, *, *, *, *, *)
         .returning(Success(ByteString(message)))

@@ -4,12 +4,7 @@
 
 import TestController.{expectedSignature, payload}
 import akka.util.ByteString
-import com.mesonomics.playhmacsignatures.{
-  EpochSeconds,
-  HmacSHA256SignatureVerifier,
-  InvalidSignatureException,
-  InvalidTimestampException
-}
+import com.mesonomics.playhmacsignatures._
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -29,7 +24,8 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
     Clock.fixed(offsetTime.toInstant, offsetTime.toZonedDateTime.getZone)
   val timestampTolerance: FiniteDuration = 5.minutes
   val testSecret: String = "test-secret"
-  val testSignatureInvalid: ByteString = ByteString("test-signature")
+  val testSignatureInvalid: HmacSignature = HmacSignature("test-signature")
+
   val algorithm: String = "HmacSHA256"
   val secret: SecretKeySpec = new SecretKeySpec(testSecret.getBytes, algorithm)
   val testBody: ByteString = ByteString("test-body")
@@ -38,12 +34,15 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
     OffsetDateTime.parse(timestamp).toEpochSecond
   )
 
-  def validSignature(body: ByteString, timestamp: EpochSeconds): ByteString = {
+  def validSignature(
+      body: ByteString,
+      timestamp: EpochSeconds
+  ): HmacSignature = {
     val testPayload: String = s"v0:$timestamp:${body.utf8String}"
     val mac: Mac = Mac.getInstance(algorithm)
     mac.init(secret)
     val signatureBytes: Array[Byte] = mac.doFinal(testPayload.getBytes)
-    ByteString(
+    HmacSignature(
       f"v0=${DatatypeConverter.printHexBinary(signatureBytes).toLowerCase}"
     )
   }

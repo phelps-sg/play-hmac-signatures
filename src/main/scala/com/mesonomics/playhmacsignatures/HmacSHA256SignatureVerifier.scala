@@ -19,6 +19,11 @@ case object InvalidTimestampException extends Exception("Invalid timestamp")
 
 final case class EpochSeconds(value: Long) extends AnyVal
 
+final case class HmacSignature(value: ByteString) extends AnyVal
+object HmacSignature {
+  def apply(value: String): HmacSignature = HmacSignature(ByteString(value))
+}
+
 @ImplementedBy(classOf[HmacSHA256SignatureVerifier])
 trait SignatureVerifierService {
   def validate(
@@ -28,13 +33,13 @@ trait SignatureVerifierService {
   )(
       payload: (EpochSeconds, ByteString) => String
   )(
-      expectedSignature: Array[Byte] => ByteString
+      expectedSignature: Array[Byte] => HmacSignature
   )(
       signingSecret: String
   )(
       timestamp: EpochSeconds,
       body: ByteString,
-      signature: ByteString
+      signature: HmacSignature
   ): Try[ByteString]
 }
 
@@ -50,13 +55,13 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
   )(
       payload: (EpochSeconds, ByteString) => String
   )(
-      expectedSignature: Array[Byte] => ByteString
+      expectedSignature: Array[Byte] => HmacSignature
   )(
       signingSecret: String
   )(
       timestamp: EpochSeconds,
       body: ByteString,
-      signature: ByteString
+      signature: HmacSignature
   ): Try[ByteString] =
     for {
       _ <- validateTimestamp(clock)(timestampTolerance)(timestamp)
@@ -70,13 +75,13 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
   protected def validateSignature(
       payload: (EpochSeconds, ByteString) => String
   )(
-      expectedSignature: Array[Byte] => ByteString
+      expectedSignature: Array[Byte] => HmacSignature
   )(
       signingSecret: String
   )(
       timestamp: EpochSeconds,
       body: ByteString,
-      signature: ByteString
+      signature: HmacSignature
   ): Try[ByteString] = {
     val secret = new SecretKeySpec(signingSecret.getBytes, algorithm)
     val mac = Mac.getInstance(algorithm)

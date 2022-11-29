@@ -26,8 +26,8 @@ class SlackSignatureVerifyAction @Inject() (
   override def payload(timestamp: EpochSeconds, body: ByteString): String =
     s"v0:$timestamp:${body.utf8String}"
 
-  override def expectedSignature(macBytes: Array[Byte]): ByteString =
-    ByteString(
+  override def expectedSignature(macBytes: Array[Byte]): HmacSignature =
+    HmacSignature(
       s"v0=${DatatypeConverter.printHexBinary(macBytes).toLowerCase}"
     )
 }
