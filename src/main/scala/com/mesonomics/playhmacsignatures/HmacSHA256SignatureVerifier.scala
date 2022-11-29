@@ -17,12 +17,22 @@ import scala.util.{Failure, Success, Try}
 case object InvalidSignatureException extends Exception("Invalid signature")
 case object InvalidTimestampException extends Exception("Invalid timestamp")
 
+final case class EpochSeconds(value: Long) extends AnyVal
+
 @ImplementedBy(classOf[HmacSHA256SignatureVerifier])
 trait SignatureVerifierService {
-  def validate(clock: Clock)(timestampTolerance: Duration)(
-      payload: (Long, ByteString) => String
-  )(expectedSignature: Array[Byte] => ByteString)(signingSecret: String)(
-      timestamp: Long,
+  def validate(
+      clock: Clock
+  )(
+      timestampTolerance: Duration
+  )(
+      payload: (EpochSeconds, ByteString) => String
+  )(
+      expectedSignature: Array[Byte] => ByteString
+  )(
+      signingSecret: String
+  )(
+      timestamp: EpochSeconds,
       body: ByteString,
       signature: ByteString
   ): Try[ByteString]
@@ -38,33 +48,60 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
   )(
       timestampTolerance: Duration
   )(
-      payload: (Long, ByteString) => String
+      payload: (EpochSeconds, ByteString) => String
   )(
       expectedSignature: Array[Byte] => ByteString
   )(
       signingSecret: String
   )(
-      timestamp: Long,
+      timestamp: EpochSeconds,
+      body: ByteString,
+      signature: ByteString
+  ): Try[ByteString] =
+    for {
+      _ <- validateTimestamp(clock)(timestampTolerance)(timestamp)
+      body <- validateSignature(payload)(expectedSignature)(signingSecret)(
+        timestamp,
+        body,
+        signature
+      )
+    } yield body
+
+  protected def validateSignature(
+      payload: (EpochSeconds, ByteString) => String
+  )(
+      expectedSignature: Array[Byte] => ByteString
+  )(
+      signingSecret: String
+  )(
+      timestamp: EpochSeconds,
       body: ByteString,
       signature: ByteString
   ): Try[ByteString] = {
+    val secret = new SecretKeySpec(signingSecret.getBytes, algorithm)
+    val mac = Mac.getInstance(algorithm)
+    mac.init(secret)
+    val macBytes = mac.doFinal(payload(timestamp, body).getBytes)
+    if (signature == expectedSignature(macBytes)) {
+      Success(body)
+    } else {
+      Failure(InvalidSignatureException)
+    }
+  }
 
+  protected def validateTimestamp(
+      clock: Clock
+  )(
+      tolerance: Duration
+  )(
+      timestamp: EpochSeconds
+  ): Try[EpochSeconds] = {
     if (
       abs(
-        timestamp - clock.instant().getEpochSecond
-      ) > timestampTolerance.toSeconds
-    ) {
+        timestamp.value - clock.instant().getEpochSecond
+      ) <= tolerance.toSeconds
+    ) Success(timestamp)
+    else
       Failure(InvalidTimestampException)
-    } else {
-      val secret = new SecretKeySpec(signingSecret.getBytes, algorithm)
-      val mac = Mac.getInstance(algorithm)
-      mac.init(secret)
-      val macBytes = mac.doFinal(payload(timestamp, body).getBytes)
-      if (signature == expectedSignature(macBytes)) {
-        Success(body)
-      } else {
-        Failure(InvalidSignatureException)
-      }
-    }
   }
 }

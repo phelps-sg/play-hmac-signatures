@@ -9,7 +9,7 @@
 Add the following to `build.sbt`
 
 ~~~
-libraryDependencies += "com.mesonomics" %% "play-hmac-signatures" % "0.4.2"
+libraryDependencies += "com.mesonomics" %% "play-hmac-signatures" % "0.5.0"
 ~~~
 
 ## Example usage
@@ -32,22 +32,21 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 class TestController(
-    val controllerComponents: ControllerComponents,
-    implicit val signatureVerifyAction: SlackSignatureVerifyAction
-)(implicit ec: ExecutionContext)
-    extends BaseController
+                      val controllerComponents: ControllerComponents,
+                      implicit val signatureVerifyAction: SlackSignatureVerifyAction
+                    )(implicit ec: ExecutionContext)
+  extends BaseController
     with HMACSignatureHelpers {
 
-  private val onSignatureValid = validateSignatureParseAndProcess(Json.parse)(_)
+  private val onSignatureValid = validateSignatureAsync(Json.parse)(_)
 
-  def test: Action[ByteString] = {
+  def test: Action[ByteString] =
     onSignatureValid { body: JsValue =>
       Future {
         val message = body("message")
         Ok(message)
       }
     }
-  }
 }
 ~~~
 

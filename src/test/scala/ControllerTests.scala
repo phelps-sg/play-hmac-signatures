@@ -6,6 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
+  EpochSeconds,
   InvalidSignatureException,
   SignatureVerifierService,
   SlackSignatureVerifyAction
@@ -51,7 +52,7 @@ class ControllerTests
     )
 
     val messageJson = Json.parse(""" { "message" : "Hello world!" } """)
-    val message = Json.parse(""" { "message" : "Hello world!" } """).toString()
+    val message = messageJson.toString()
     val body = ByteString(message)
 
     val signatureHeaders = Array(
@@ -101,10 +102,12 @@ class ControllerTests
     "return a 401 error when supplying invalid signatures" in {
 
       (mockService
-        .validate(_: Clock)(_: Duration)(_: (Long, ByteString) => String)(
+        .validate(_: Clock)(_: Duration)(
+          _: (EpochSeconds, ByteString) => String
+        )(
           _: Array[Byte] => ByteString
         )(_: String)(
-          _: Long,
+          _: EpochSeconds,
           _: ByteString,
           _: ByteString
         ))
@@ -122,10 +125,12 @@ class ControllerTests
     "return success when supplying valid signatures" in {
 
       (mockService
-        .validate(_: Clock)(_: Duration)(_: (Long, ByteString) => String)(
+        .validate(_: Clock)(_: Duration)(
+          _: (EpochSeconds, ByteString) => String
+        )(
           _: Array[Byte] => ByteString
         )(_: String)(
-          _: Long,
+          _: EpochSeconds,
           _: ByteString,
           _: ByteString
         ))
