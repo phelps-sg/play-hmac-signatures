@@ -4,6 +4,7 @@
 
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
+  EpochSeconds,
   HMACSignatureHelpers,
   SlackSignatureVerifyAction
 }
@@ -14,7 +15,7 @@ import javax.xml.bind.DatatypeConverter
 import scala.concurrent.{ExecutionContext, Future}
 
 object TestController {
-  def payload(timestamp: Long, body: ByteString): String =
+  def payload(timestamp: EpochSeconds, body: ByteString): String =
     s"v0:$timestamp:${body.utf8String}"
   def expectedSignature(macBytes: Array[Byte]): ByteString =
     ByteString(
@@ -29,14 +30,13 @@ class TestController(
     extends BaseController
     with HMACSignatureHelpers {
 
-  private val onSignatureValid = validateSignatureParseAndProcess(Json.parse)(_)
+  private val onSignatureValid = validateSignatureAsync(Json.parse)(_)
 
-  def test: Action[ByteString] = {
+  def test: Action[ByteString] =
     onSignatureValid { body: JsValue =>
       Future {
         val message = body("message")
         Ok(message)
       }
     }
-  }
 }
