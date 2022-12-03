@@ -152,9 +152,7 @@ abstract class SignatureVerifyAction(
   }
 
   protected def getSignature[A](request: Request[A]): Option[HmacSignature] =
-    request.headers.get(headerKeySignature) map { str =>
-      HmacSignature(ByteString(str))
-    }
+    request.headers.get(headerKeySignature) map { HmacSignature(_) }
 
   override protected def executionContext: ExecutionContext = ec
 
