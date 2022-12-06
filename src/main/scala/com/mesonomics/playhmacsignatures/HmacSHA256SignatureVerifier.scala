@@ -6,6 +6,7 @@ package com.mesonomics.playhmacsignatures
 
 import akka.util.ByteString
 import com.google.inject.{ImplementedBy, Singleton}
+import play.api.Logging
 
 import java.time.Clock
 import javax.crypto.Mac
@@ -44,7 +45,9 @@ trait SignatureVerifierService {
 }
 
 @Singleton
-class HmacSHA256SignatureVerifier extends SignatureVerifierService {
+class HmacSHA256SignatureVerifier
+    extends SignatureVerifierService
+    with Logging {
 
   val algorithm = "HmacSHA256"
 
@@ -90,6 +93,7 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
     if (signature == expectedSignature(macBytes)) {
       Success(body)
     } else {
+      logger.debug(s"Invalid signature ($timestamp, $body, $signature)")
       Failure(InvalidSignatureException)
     }
   }
@@ -105,8 +109,11 @@ class HmacSHA256SignatureVerifier extends SignatureVerifierService {
       abs(
         timestamp.value - clock.instant().getEpochSecond
       ) <= tolerance.toSeconds
-    ) Success(timestamp)
-    else
+    ) {
+      Success(timestamp)
+    } else {
+      logger.debug(s"Invalid timestamp ($timestamp, $tolerance, $clock)")
       Failure(InvalidTimestampException)
+    }
   }
 }
