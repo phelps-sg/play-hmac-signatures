@@ -63,14 +63,11 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
 
     "return success for a valid signature" in {
       val verifier = new HmacSHA256SignatureVerifier()
+      val signature = validSignature(testBody, timestamp)
       val result =
         verifier.validate(clock)(timestampTolerance)(payload)(
           expectedSignature
-        )(testSecret)(
-          timestamp,
-          testBody,
-          validSignature(testBody, timestamp)
-        )
+        )(testSecret)(timestamp, testBody, signature)
       result should matchPattern { case Success(`testBody`) => }
     }
 

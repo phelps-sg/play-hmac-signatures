@@ -23,8 +23,9 @@ class SlackSignatureVerifyAction @Inject() (
   override val headerKeySignature: String = "X-Slack-Signature"
   override val signingSecretConfigKey: String = "slack.signingSecret"
 
-  override def payload(timestamp: EpochSeconds, body: ByteString): String =
-    s"v0:$timestamp:${body.utf8String}"
+  override def payload(timestamp: EpochSeconds, body: ByteString): String = {
+    s"v0:${timestamp.value}:${body.utf8String}"
+  }
 
   override def expectedSignature(macBytes: Array[Byte]): HmacSignature =
     HmacSignature(

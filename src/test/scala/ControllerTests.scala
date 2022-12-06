@@ -2,24 +2,18 @@
  * Copyright (c) 2022 Steve Phelps
  */
 
-import akka.actor.ActorSystem
-import akka.stream.Materializer
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
   EpochSeconds,
   HmacSignature,
-  InvalidSignatureException,
-  SignatureVerifierService,
-  SlackSignatureVerifyAction
+  InvalidSignatureException
 }
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpecLike
-import play.api.Configuration
 import play.api.http.Status.{OK, UNAUTHORIZED}
-import play.api.libs.json.Json
-import play.api.mvc.BodyParsers
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers.{POST, contentAsJson, defaultAwaitTimeout, status}
 import play.api.test.{FakeRequest, Helpers}
 
@@ -33,30 +27,19 @@ class ControllerTests
     with should.Matchers
     with MockFactory {
 
-  "TestController" should {
+  trait TestFixtures extends CommonFixtures {
 
-    val mockService = mock[SignatureVerifierService]
-    val config = Configuration("slack.signingSecret" -> "test-secret")
-    implicit val system: ActorSystem = ActorSystem("ControllerTests")
-    implicit val mat: Materializer = Materializer(system)
-    val bp = new BodyParsers.Default()
-
-    val slackSignatureVerifyAction = new SlackSignatureVerifyAction(
-      bp,
-      config,
-      mockService
-    )
-
-    val testController = new TestController(
+    val testController: TestController = new TestController(
       Helpers.stubControllerComponents(),
       slackSignatureVerifyAction
     )
 
-    val messageJson = Json.parse(""" { "message" : "Hello world!" } """)
-    val message = messageJson.toString()
-    val body = ByteString(message)
+    val messageJson: JsValue =
+      Json.parse(""" { "message" : "Hello world!" } """)
+    val message: String = messageJson.toString()
+    val body: ByteString = ByteString(message)
 
-    val signatureHeaders = Array(
+    val signatureHeaders: Array[(String, String)] = Array(
       ("X-Slack-Request-Timestamp", "1663156082"),
       (
         "X-Slack-Signature",
@@ -64,13 +47,17 @@ class ControllerTests
       )
     )
 
-    "return a 401 error when not supplying signatures" in {
+  }
+
+  "TestController" should {
+
+    "return a 401 error when not supplying signatures" in new TestFixtures {
       val fakeRequest = FakeRequest(POST, "/").withBody(body)
       val result = testController.test().apply(fakeRequest)
       status(result) mustEqual UNAUTHORIZED
     }
 
-    "return a 401 error when supplying empty timestamp" in {
+    "return a 401 error when supplying empty timestamp" in new TestFixtures {
       val fakeRequest = FakeRequest(POST, "/").withBody(body)
       val headersWithEmptyTimestamp = Array(
         ("X-Slack-Request-Timestamp", ""),
@@ -85,7 +72,7 @@ class ControllerTests
       status(result) mustEqual UNAUTHORIZED
     }
 
-    "return a 401 error when supplying non-numeric timestamp" in {
+    "return a 401 error when supplying non-numeric timestamp" in new TestFixtures {
       val fakeRequest = FakeRequest(POST, "/").withBody(body)
       val headersWithEmptyTimestamp = Array(
         ("X-Slack-Request-Timestamp", "non-numeric"),
@@ -100,7 +87,7 @@ class ControllerTests
       status(result) mustEqual UNAUTHORIZED
     }
 
-    "return a 401 error when supplying invalid signatures" in {
+    "return a 401 error when supplying invalid signatures" in new TestFixtures {
 
       (mockService
         .validate(_: Clock)(_: Duration)(
@@ -123,7 +110,7 @@ class ControllerTests
       status(result) mustEqual UNAUTHORIZED
     }
 
-    "return success when supplying valid signatures" in {
+    "return success when supplying valid signatures" in new TestFixtures {
 
       (mockService
         .validate(_: Clock)(_: Duration)(
