@@ -2,7 +2,6 @@
  * Copyright (c) 2022 Steve Phelps
  */
 
-import TestController.{expectedSignature, payload}
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures._
 import org.scalatest.matchers.should
@@ -30,6 +29,16 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
   val secret: SecretKeySpec = new SecretKeySpec(testSecret.getBytes, algorithm)
   val testBody: ByteString = ByteString("test-body")
 
+  def payload(timestamp: EpochSeconds, body: ByteString): String =
+    s"v0:${timestamp.value}:${body.utf8String}"
+
+  def expectedSignature(macBytes: Array[Byte]): HmacSignature = {
+    HmacSignature(
+      ByteString(
+        s"v0=${DatatypeConverter.printHexBinary(macBytes).toLowerCase}"
+      )
+    )
+  }
   def toEpochSeconds(timestamp: String): EpochSeconds = EpochSeconds(
     OffsetDateTime.parse(timestamp).toEpochSecond
   )
@@ -38,16 +47,15 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       body: ByteString,
       timestamp: EpochSeconds
   ): HmacSignature = {
-    val testPayload: String = s"v0:$timestamp:${body.utf8String}"
+    val testPayload: String = payload(timestamp, body)
     val mac: Mac = Mac.getInstance(algorithm)
     mac.init(secret)
     val signatureBytes: Array[Byte] = mac.doFinal(testPayload.getBytes)
-    HmacSignature(
-      f"v0=${DatatypeConverter.printHexBinary(signatureBytes).toLowerCase}"
-    )
+    expectedSignature(signatureBytes)
   }
 
   "HmacSHA256SignatureVerify" should {
+
     "throw an exception for an incorrect signature" in {
       val verifier = new HmacSHA256SignatureVerifier()
       val result = verifier.validate(clock)(timestampTolerance)(payload)(

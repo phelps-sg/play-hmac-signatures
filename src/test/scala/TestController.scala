@@ -4,28 +4,13 @@
 
 import akka.util.ByteString
 import com.mesonomics.playhmacsignatures.{
-  EpochSeconds,
   HMACSignatureHelpers,
-  HmacSignature,
   SlackSignatureVerifyAction
 }
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, BaseController, ControllerComponents}
 
-import javax.xml.bind.DatatypeConverter
 import scala.concurrent.{ExecutionContext, Future}
-
-object TestController {
-  def payload(timestamp: EpochSeconds, body: ByteString): String =
-    s"v0:$timestamp:${body.utf8String}"
-  def expectedSignature(macBytes: Array[Byte]): HmacSignature = {
-    HmacSignature(
-      ByteString(
-        s"v0=${DatatypeConverter.printHexBinary(macBytes).toLowerCase}"
-      )
-    )
-  }
-}
 
 class TestController(
     val controllerComponents: ControllerComponents,
