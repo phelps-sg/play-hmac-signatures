@@ -68,7 +68,7 @@ trait HMACSignatureHelpers {
         .map(bodyProcessor) match {
         case Success(result) => result
         case Failure(ex) =>
-          Future {
+          Future.successful {
             Unauthorized(ex.getMessage)
           }
       }
@@ -169,7 +169,7 @@ abstract class SignatureVerifyAction(
           Right(new SignedRequest[A](callback, request))
         }
       case _ =>
-        Future {
+        Future.successful {
           Left(Unauthorized("Invalid signature headers"))
         }
     }
