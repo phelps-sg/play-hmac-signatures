@@ -42,7 +42,7 @@ class TestController(
 
   def test: Action[ByteString] =
     onSignatureValid { body: JsValue =>
-      Future {
+      Future.successful {
         val message = body("message")
         Ok(message)
       }
