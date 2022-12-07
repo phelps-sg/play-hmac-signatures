@@ -39,6 +39,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
       )
     )
   }
+
   def toEpochSeconds(timestamp: String): EpochSeconds = EpochSeconds(
     OffsetDateTime.parse(timestamp).toEpochSecond
   )
