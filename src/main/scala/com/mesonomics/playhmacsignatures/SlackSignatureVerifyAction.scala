@@ -12,6 +12,18 @@ import play.api.mvc.BodyParsers
 import javax.xml.bind.DatatypeConverter
 import scala.concurrent.ExecutionContext
 
+/** This class can be used to validate signatures in
+  * [[https://api.slack.com/authentication/verifying-requests-from-slack#verifying-requests-from-slack-using-signing-secrets__a-recipe-for-security__step-by-step-walk-through-for-validating-a-request Slack requests]].
+  *
+  * @param parser
+  *   The body parser
+  * @param config
+  *   The play configuration instance
+  * @param signatureVerifierService
+  *   The service used to validate the signature against the body
+  * @param ec
+  *   The execution context
+  */
 class SlackSignatureVerifyAction @Inject() (
     parser: BodyParsers.Default,
     config: Configuration,
