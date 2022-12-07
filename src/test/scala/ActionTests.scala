@@ -11,7 +11,7 @@ class ActionTests extends AnyWordSpecLike with should.Matchers {
 
   trait TestFixtures extends CommonFixtures {
     val timeSeconds: Long = 1000
-    val timestamp: EpochSeconds = EpochSeconds(1000)
+    val timestamp: EpochSeconds = EpochSeconds(timeSeconds)
     val bodyStr: String = "test-body"
     val body: ByteString = ByteString(bodyStr)
     val signatureBytes: Array[Byte] = Array(0xff, 0x00, 0xf0).map(_.toByte)
