@@ -1,6 +1,6 @@
 # Continuous Integration (CI) to Build & Test & Coverage & Lint.
 # ~~
-name: CI
+name: CD
 on:
   release:
     types: [ created ]
