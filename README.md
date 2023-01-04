@@ -1,6 +1,6 @@
 # play-hmac-signatures
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/phelps-sg/play-hmac-signatures/CI)
+[![GitHub Workflow Status](https://github.com/phelps-sg/play-hmac-signatures/actions/workflows/continouos-integration.yml/badge.svg)](https://github.com/phelps-sg/play-hmac-signatures/actions/workflows/continouos-integration.yml)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/phelps-sg/play-hmac-signatures)
 ![GitHub](https://img.shields.io/github/license/phelps-sg/play-hmac-signatures?color=blue)
 
