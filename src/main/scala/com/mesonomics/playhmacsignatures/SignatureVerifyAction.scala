@@ -132,7 +132,9 @@ abstract class SignatureVerifyAction(
   val headerKeyTimestamp: String
   val headerKeySignature: String
   val signingSecretConfigKey: String
+
   def payload(timestamp: EpochSeconds, body: ByteString): String
+
   def expectedSignature(macBytes: Array[Byte]): HmacSignature
 
   protected val validate
@@ -152,26 +154,31 @@ abstract class SignatureVerifyAction(
   }
 
   protected def getSignature[A](request: Request[A]): Option[HmacSignature] =
-    request.headers.get(headerKeySignature) map { HmacSignature(_) }
+    request.headers.get(headerKeySignature) map {
+      HmacSignature(_)
+    }
+
+  protected def getSignedRequest[A](
+      request: Request[A]
+  ): Either[Result, SignedRequest[A]] = {
+    val timestamp = getTimestamp(request)
+    val signature = getSignature(request)
+    (timestamp, signature) match {
+      case (Some(timestamp), Some(signature)) =>
+        val callback =
+          (body: ByteString) => validate(timestamp, body, signature)
+        Right(new SignedRequest[A](callback, request))
+      case _ =>
+        Left(Unauthorized("Invalid signature headers"))
+    }
+  }
 
   override protected def executionContext: ExecutionContext = ec
 
   override protected def refine[A](
       request: Request[A]
   ): Future[Either[Result, SignedRequest[A]]] = {
-    val timestamp = getTimestamp(request)
-    val signature = getSignature(request)
-    (timestamp, signature) match {
-      case (Some(timestamp), Some(signature)) =>
-        Future.successful {
-          val callback =
-            (body: ByteString) => validate(timestamp, body, signature)
-          Right(new SignedRequest[A](callback, request))
-        }
-      case _ =>
-        Future.successful {
-          Left(Unauthorized("Invalid signature headers"))
-        }
-    }
+    Future.successful(getSignedRequest(request))
   }
+
 }
