@@ -6,7 +6,7 @@ object Dependencies extends AutoPlugin {
 
   object Version {
     val scala212 = "2.12.18"
-    val scala213 = "2.13.11"
+    val scala213 = "2.13.12"
 
     val play = "2.8.20"
     val guice = "7.0.0"
