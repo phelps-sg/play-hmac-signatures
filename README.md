@@ -8,7 +8,7 @@
 
 Add the following to `build.sbt`
 
-~~~
+~~~scala
 libraryDependencies += "com.mesonomics" %% "play-hmac-signatures" % "0.5.8"
 ~~~
 
