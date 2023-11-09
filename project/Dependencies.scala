@@ -8,7 +8,7 @@ object Dependencies extends AutoPlugin {
     val scala212 = "2.12.18"
     val scala213 = "2.13.12"
 
-    val play = "2.8.20"
+    val play = "2.8.21"
     val guice = "7.0.0"
     val jackson = "2.13.4"
 
