@@ -12,7 +12,7 @@ object Dependencies extends AutoPlugin {
     val guice = "7.0.0"
     val jackson = "2.13.4"
 
-    val scalatic = "3.2.17"
+    val scalatic = "3.2.18"
     val scalaMock = "5.2.0"
     val scalaTest = "3.2.17"
     val scalaTestPlus = "5.1.0"
