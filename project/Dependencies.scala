@@ -14,7 +14,7 @@ object Dependencies extends AutoPlugin {
 
     val scalatic = "3.2.17"
     val scalaMock = "5.2.0"
-    val scalaTest = "3.2.17"
+    val scalaTest = "3.2.18"
     val scalaTestPlus = "5.1.0"
   }
 
