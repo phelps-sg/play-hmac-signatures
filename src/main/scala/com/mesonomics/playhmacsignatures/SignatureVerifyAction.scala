@@ -146,10 +146,9 @@ abstract class SignatureVerifyAction(
     )(_, _, _)
 
   protected def getTimestamp[A](request: Request[A]): Option[EpochSeconds] = {
-    import Utils.LongStringScala212
     for {
       timestampStr <- request.headers.get(headerKeyTimestamp)
-      t <- timestampStr.toLongOpt
+      t <- timestampStr.toLongOption
     } yield EpochSeconds(t)
   }
 

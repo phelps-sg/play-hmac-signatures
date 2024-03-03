@@ -1,5 +1,4 @@
 import Common._
-import Dependencies.Version.scala212
 import Dependencies.Version.scala213
 
 name := """play-hmac-signatures"""
@@ -9,7 +8,7 @@ enablePlugins(Common, Dependencies)
 inThisBuild(
   List(
     scalaVersion := scala213,
-    crossScalaVersions := Seq(scala212, scala213),
+    crossScalaVersions := Seq(scala213),
     scalafixScalaBinaryVersion := "2.13",
     versionScheme := Some("early-semver"),
     semanticdbEnabled := true,
