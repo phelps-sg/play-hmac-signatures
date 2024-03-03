@@ -3,6 +3,7 @@
  */
 
 import akka.util.ByteString
+import com.mesonomics.playhmacsignatures.SlackSignatureVerifyAction.convertBytesToHex
 import com.mesonomics.playhmacsignatures._
 import org.scalatest.matchers.should
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -10,7 +11,6 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import java.time.{Clock, OffsetDateTime}
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import javax.xml.bind.DatatypeConverter
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.util.{Failure, Success}
 
@@ -35,7 +35,7 @@ class ServiceTests extends AnyWordSpecLike with should.Matchers {
   def expectedSignature(macBytes: Array[Byte]): HmacSignature = {
     HmacSignature(
       ByteString(
-        s"v0=${DatatypeConverter.printHexBinary(macBytes).toLowerCase}"
+        s"v0=${convertBytesToHex(macBytes)}"
       )
     )
   }
