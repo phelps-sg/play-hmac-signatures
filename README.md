@@ -27,15 +27,13 @@ import com.mesonomics.playhmacsignatures.{
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, BaseController, ControllerComponents}
 
-import javax.xml.bind.DatatypeConverter
 import scala.concurrent.{ExecutionContext, Future}
 
-
 class TestController(
-                      val controllerComponents: ControllerComponents,
-                      implicit val signatureVerifyAction: SlackSignatureVerifyAction
-                    )(implicit ec: ExecutionContext)
-  extends BaseController
+    val controllerComponents: ControllerComponents,
+    implicit val signatureVerifyAction: SlackSignatureVerifyAction
+)(implicit ec: ExecutionContext)
+    extends BaseController
     with HMACSignatureHelpers {
 
   private val onSignatureValid = validateSignatureAsync(Json.parse)(_)
