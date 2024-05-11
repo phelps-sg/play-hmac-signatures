@@ -5,9 +5,9 @@ import sbt.plugins.JvmPlugin
 object Dependencies extends AutoPlugin {
 
   object Version {
-    val scala213 = "2.13.13"
+    val scala213 = "2.13.14"
 
-    val play = "2.9.2"
+    val play = "2.9.3"
     val guice = "7.0.0"
     val jackson = "2.16.1"
 
