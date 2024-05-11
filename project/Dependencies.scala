@@ -7,7 +7,7 @@ object Dependencies extends AutoPlugin {
   object Version {
     val scala213 = "2.13.14"
 
-    val play = "2.9.3"
+    val play = "3.0.3"
     val guice = "7.0.0"
     val jackson = "2.16.1"
 
@@ -27,7 +27,7 @@ object Dependencies extends AutoPlugin {
   ] =
     Seq(
       libraryDependencies ++= Seq(
-        "com.typesafe.play" %% "play" % play,
+        "org.playframework" %% "play" % play,
         "com.google.inject" % "guice" % guice,
         "org.scalactic" %% "scalactic" % scalatic,
         "org.scalatest" %% "scalatest" % scalaTest % Test,
