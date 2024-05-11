@@ -1,5 +1,5 @@
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.11.1")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.12.1")
 
 // CI Release plugin.
 // ~
@@ -11,7 +11,7 @@ addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.12")
 // ~
 // sbt-scoverage is a plugin for SBT that integrates the scoverage code coverage library.
 // See more: https://github.com/scoverage/sbt-scoverage
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.11")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.12")
 
 // Fixing Scala-Xml mess (Temp).
 ThisBuild / libraryDependencySchemes ++= Seq(
