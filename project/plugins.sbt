@@ -11,7 +11,7 @@ addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.12")
 // ~
 // sbt-scoverage is a plugin for SBT that integrates the scoverage code coverage library.
 // See more: https://github.com/scoverage/sbt-scoverage
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.12")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.1.0")
 
 // Fixing Scala-Xml mess (Temp).
 ThisBuild / libraryDependencySchemes ++= Seq(
