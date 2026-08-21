@@ -5,7 +5,7 @@ addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.12.1")
 // ~
 // This is an sbt plugin to help automate releases to Sonatype and Maven Central from GitHub Actions.
 // See more: https://github.com/sbt/sbt-ci-release
-addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.12")
+addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.12.1")
 
 // Test Coverage plugin.
 // ~
